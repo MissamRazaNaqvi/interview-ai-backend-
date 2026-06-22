@@ -9,7 +9,7 @@ const aiRouter = express.Router();
 // router.route('/').post(verifyToken,upload.single("resume"), generatInterviewReport)
 
 aiRouter.post("/interview-report", verifyToken, upload.single("resume"), generatInterviewReport);
-aiRouter.get("/analyses", verifyToken, getUserAnalyses);
-aiRouter.get("/:id", verifyToken, getAnalysisById);
+aiRouter.get("/reports", verifyToken, getUserAnalyses);
+aiRouter.get("/report/:id", verifyToken, getAnalysisById);
 
 export { aiRouter }

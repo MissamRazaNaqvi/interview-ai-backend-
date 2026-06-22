@@ -21,72 +21,72 @@ export const generatInterviewReport = async (req, res) => {
 
         // ✅ Explicitly tell Gemini EXACTLY what JSON structure to return
         const prompt = `
-You are a senior technical recruiter and ATS expert. Analyze the candidate's resume against the provided job description.
+            You are a senior technical recruiter and ATS expert. Analyze the candidate's resume against the provided job description.
 
-Job Description: ${jobDescription}
-Candidate Self Description: ${selfDescription || "Not provided"}
-Resume Content: ${resumeText}
+            Job Description: ${jobDescription}
+            Candidate Self Description: ${selfDescription || "Not provided"}
+            Resume Content: ${resumeText}
 
-Return ONLY a valid JSON object with EXACTLY this structure (no markdown, no explanation, no extra fields):
+            Return ONLY a valid JSON object with EXACTLY this structure (no markdown, no explanation, no extra fields):
 
-{
-  "atsScore": <number 0-100>,
-  "jobMatchScore": <number 0-100>,
-  "profileSummary": "<string>",
-  "technicalSkills": {
-    "matched": ["<skill>"],
-    "missing": ["<skill>"],
-    "additional": ["<skill>"],
-    "score": <number 0-100>
-  },
-  "softSkills": {
-    "strengths": ["<skill>"],
-    "missing": ["<skill>"],
-    "score": <number 0-100>
-  },
-  "skillGapAnalysis": {
-    "criticalMissingSkills": ["<skill>"],
-    "recommendedLearning": ["<string>"],
-    "overallGap": "<string>"
-  },
-  "resumeStrengths": ["<string>"],
-  "resumeWeaknesses": ["<string>"],
-  "missingKeywords": ["<keyword>"],
-  "improvementSuggestions": [
-    { "section": "<string>", "suggestion": "<string>" }
-  ],
-  "recommendedProjects": [
-    { "title": "<string>", "description": "<string>", "skillsCovered": ["<string>"] }
-  ],
-  "careerPathRecommendation": {
-    "currentLevel": "<string>",
-    "nextRole": "<string>",
-    "longTermGoal": "<string>",
-    "explanation": "<string>"
-  },
-  "learningRoadmap": {
-    "beginner": ["<string>"],
-    "intermediate": ["<string>"],
-    "advanced": ["<string>"]
-  },
-  "interviewPreparation": {
-    "technicalQuestions": ["<string>"],
-    "behavioralQuestions": ["<string>"],
-    "topicsToStudy": ["<string>"]
-  },
-  "overallFeedback": {
-    "overallScore": <number 0-100>,
-    "summary": "<string>",
-    "hiringRecommendation": "<one of: Strongly Recommended | Recommended | Average | Needs Improvement | Not Recommended>"
-  }
-}
+            {
+            "atsScore": <number 0-100>,
+            "jobMatchScore": <number 0-100>,
+            "profileSummary": "<string>",
+            "technicalSkills": {
+                "matched": ["<skill>"],
+                "missing": ["<skill>"],
+                "additional": ["<skill>"],
+                "score": <number 0-100>
+            },
+            "softSkills": {
+                "strengths": ["<skill>"],
+                "missing": ["<skill>"],
+                "score": <number 0-100>
+            },
+            "skillGapAnalysis": {
+                "criticalMissingSkills": ["<skill>"],
+                "recommendedLearning": ["<string>"],
+                "overallGap": "<string>"
+            },
+            "resumeStrengths": ["<string>"],
+            "resumeWeaknesses": ["<string>"],
+            "missingKeywords": ["<keyword>"],
+            "improvementSuggestions": [
+                { "section": "<string>", "suggestion": "<string>" }
+            ],
+            "recommendedProjects": [
+                { "title": "<string>", "description": "<string>", "skillsCovered": ["<string>"] }
+            ],
+            "careerPathRecommendation": {
+                "currentLevel": "<string>",
+                "nextRole": "<string>",
+                "longTermGoal": "<string>",
+                "explanation": "<string>"
+            },
+            "learningRoadmap": {
+                "beginner": ["<string>"],
+                "intermediate": ["<string>"],
+                "advanced": ["<string>"]
+            },
+            "interviewPreparation": {
+                "technicalQuestions": ["<string>"],
+                "behavioralQuestions": ["<string>"],
+                "topicsToStudy": ["<string>"]
+            },
+            "overallFeedback": {
+                "overallScore": <number 0-100>,
+                "summary": "<string>",
+                "hiringRecommendation": "<one of: Strongly Recommended | Recommended | Average | Needs Improvement | Not Recommended>"
+            }
+            }
 
-Rules:
-- Return ONLY the JSON object above. No markdown. No \`\`\`json fences.
-- Every array must have at least one item (never empty unless truly nothing applies, then use []).
-- Every number field must be a number, not a string.
-- hiringRecommendation must be exactly one of the 5 enum values listed.
-`;
+            Rules:
+            - Return ONLY the JSON object above. No markdown. No \`\`\`json fences.
+            - Every array must have at least one item (never empty unless truly nothing applies, then use []).
+            - Every number field must be a number, not a string.
+            - hiringRecommendation must be exactly one of the 5 enum values listed.
+            `;
 
         const response = await aiConfig.models.generateContent({
             model: "gemini-2.5-flash",
@@ -99,9 +99,9 @@ Rules:
         const rawText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
         // ✅ Debug log — check what Gemini actually returned
-        console.log("=== RAW GEMINI RESPONSE ===");
-        console.log(rawText);
-        console.log("===========================");
+        // console.log("=== RAW GEMINI RESPONSE ===");
+        // console.log(rawText);
+        // console.log("===========================");
 
         if (!rawText) {
             return res.status(500).json({
@@ -201,18 +201,29 @@ export const getUserAnalyses = async (req, res) => {
 export const getAnalysisById = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user?._id;
+        const userId = req.user._id;
 
-        const analysis = await ResumeAnalysisModel.findOne({ _id: id, userId });
+        console.log(userId,"userId getAnalysisById")
+        
+        const analysis = await ResumeAnalysisModel.findOne({_id: id});
 
         if (!analysis) {
-            return res.status(404).json({ success: false, message: "Analysis not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Report not found or not authorized",
+            });
         }
 
-        return res.status(200).json(
-            new ApiResponse(200, analysis, "Analysis fetched successfully")
-        );
+        return res.status(200).json({
+            success: true,
+            data: analysis,
+            message: "Report fetched successfully",
+        });
+
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 };

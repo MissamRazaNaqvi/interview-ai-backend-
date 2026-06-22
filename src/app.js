@@ -28,8 +28,15 @@ import { aiRouter } from "./routes/ai.route.js";
 
 // routes declaration
 
+app.get("/", (req, res) => {
+    res.json({ message: "API running on Vercel" });
+});
+
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/interview",aiRouter)
+app.get("/api/v1/health",(req, res)=>{
+    res.send('server running perfect. ')
+})
 
 // app.get('/',(req, res)=>{
 //     res.send("Hellow your server running..........")

@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log(process.env.GEMINI_API_SECRATE_KEY,"gemini key")
+// console.log(process.env.GEMINI_API_SECRATE_KEY,"gemini key")
 
 const aiConfig = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_SECRATE_KEY,
