@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 const verifyToken = asyncHandler(async (req, res, next) => {
 
-    console.log(req.cookies, "verify")
+    // console.log(req.cookies, "verify")
 
     try {
         const token = req.cookies?.token || req.header("authorization")?.replace("Bearer ", "")
@@ -29,7 +29,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
 
         const user = await userModel.findById(decodedToken?.id).select("-password -refreshToken")
 
-        console.log(user, "user")
+        // console.log(user, "user")
 
         if (!user) {
             // todo discuss about frontend

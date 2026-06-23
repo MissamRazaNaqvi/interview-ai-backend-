@@ -157,15 +157,19 @@ const userLogout = asyncHandler(async (req, res) => {
 const loggedInUserDetail = asyncHandler(async (req, res) => {
     // console.log(req.user,"req.user")
 
-    const loggenInUser = req.user;
+    const loggedInUser = req.user;
 
-    // const loggedInUser = userModel.findById(req.user?._id);
+    // const loggedInUserFromDB = userModel.findById(req.user?._id);
 
     // console.log(loggedInUser, "loggedInUser")
 
-    res.status(201).json(
-        new ApiResponse(200, { loggenInUser }, "logged In User detail fetch successfully.")
-    )
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            loggedInUser,
+            "User details fetched successfully"
+        )
+    );
 
 })
 
