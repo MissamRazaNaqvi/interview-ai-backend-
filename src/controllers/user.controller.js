@@ -117,7 +117,9 @@ const userLogin = asyncHandler(async (req, res) => {
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
     })
 
     // console.log(token);
@@ -129,8 +131,6 @@ const userLogin = asyncHandler(async (req, res) => {
     res.status(201).json(
         new ApiResponse(200, { loggedUser, token }, "user login successfully.")
     )
-
-
 })
 
 const userLogout = asyncHandler(async (req, res) => {
